@@ -6,7 +6,7 @@
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace></RootNamespace>
-    <ProjectGuid>{BFF26D37-DAEB-46AC-D152-3933F8F92777}</ProjectGuid>
+    <ProjectGuid>{D91E09A4-7E48-3806-519E-CBF974FBF25D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AssemblyName>Assembly-CSharp</AssemblyName>
@@ -45,11 +45,19 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\Scripts\BearCubController.cs" />
+     <Compile Include="Assets\Scripts\BisonCalfController.cs" />
      <Compile Include="Assets\Scripts\CameraControl.cs" />
-     <Compile Include="Assets\Scripts\Player1Controller.cs" />
+     <Compile Include="Assets\Scripts\DirtDiggable.cs" />
+     <Compile Include="Assets\Scripts\DirtRevealChildren.cs" />
+     <Compile Include="Assets\Scripts\HoleEnter.cs" />
+     <Compile Include="Assets\Scripts\PlayerController.cs" />
+     <Compile Include="Assets\Scripts\RabbitBabyController.cs" />
+     <Compile Include="Assets\Scripts\RabbitHoles.cs" />
      <Compile Include="Assets\Scripts\ScrollingScript.cs" />
      <Compile Include="Assets\Scripts\StoneController.cs" />
      <Compile Include="Assets\Scripts\TreeClimb.cs" />
+     <Compile Include="Assets\Scripts\TreePush.cs" />
  <Reference Include="UnityEngine.UI">
  <HintPath>F:/Games/Engines/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>

@@ -6,8 +6,6 @@ public class TreeClimb : MonoBehaviour {
 	GameObject player;
 	// Use this for initialization
 	void Start () {
-	
-		player = GameObject.Find ("Player").gameObject;
 
 	}
 	
@@ -18,16 +16,17 @@ public class TreeClimb : MonoBehaviour {
 
 	void OnTriggerEnter2D(Collider2D col) {
 
-		if (col.tag == "Player") {
+		if (col.tag == "BearCubPlayer") {
 			//col.GetComponent<Player1Controller> ().SetAnimation(this.transform);
-			col.GetComponent<Player1Controller> ().climbAllowed = true;
+			col.GetComponent<BearCubController> ().climbAllowed = true;
 		}
 	}
 
 	void OnTriggerExit2D(Collider2D col) {
 
-		if (col.tag == "Player") {
-			col.GetComponent<Player1Controller> ().climbAllowed = false;
+		if (col.tag == "BearCubPlayer") {
+			col.GetComponent<BearCubController> ().climbAllowed = false;
+			col.GetComponent<BearCubController> ().cubClimbing = false;
 		}
 	} 
 }

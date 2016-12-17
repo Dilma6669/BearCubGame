@@ -1,0 +1,23 @@
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2008
+
+Project("{13F48171-8C3F-1CB2-79FF-696E72EEBC60}") = "BearCubGame", "Assembly-CSharp.csproj", "{D91E09A4-7E48-3806-519E-CBF974FBF25D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D91E09A4-7E48-3806-519E-CBF974FBF25D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D91E09A4-7E48-3806-519E-CBF974FBF25D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D91E09A4-7E48-3806-519E-CBF974FBF25D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D91E09A4-7E48-3806-519E-CBF974FBF25D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = Assembly-CSharp.csproj
+	EndGlobalSection
+EndGlobal
