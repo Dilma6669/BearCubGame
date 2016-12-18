@@ -13,11 +13,14 @@ public class DirtRevealChildren : MonoBehaviour {
 	
 	}
 
-	void OnTriggerEnter2D(Collider2D col) {
+	void OnTriggerStay2D(Collider2D col) {
 
 		if (col.tag == "RabbitBabyPlayer") {
 
 			col.GetComponent<RabbitBabyController> ().digAllowed = true;
+
+			this.GetComponent<BoxCollider2D> ().enabled = false;
+			this.GetComponent<SpriteRenderer> ().enabled = false;
 
 			for (int i = 0; i < this.transform.childCount; i++) {
 				

@@ -22,23 +22,26 @@ public class DirtDiggable : MonoBehaviour {
 
 	}
 
-	void OnTriggerStay2D(Collider2D col) {
+	void OnTriggerEnter2D(Collider2D col) {
 
 		if (col.tag == "RabbitBabyPlayer") {
 
 			dirtContact = true;
 
-			if (col.GetComponent<RabbitBabyController> ().digging == true) {
+			col.GetComponent<RabbitBabyController> ().AddDirtToList (this.transform);
 
-				DestroyDirt ();
-
-			}
 		}
 	}
 
 	void OnTriggerExit2D(Collider2D col) {
 
-		dirtContact = false;
+		if (col.tag == "RabbitBabyPlayer") {
+
+			dirtContact = false;
+
+			col.GetComponent<RabbitBabyController> ().RemoveDirtToList (this.transform);
+
+		}
 
 	} 
 }

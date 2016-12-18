@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class RabbitBabyController : MonoBehaviour {
 
@@ -12,6 +13,7 @@ public class RabbitBabyController : MonoBehaviour {
 	private float sprintSpeed;
 
 	RabbitHoles rabbitHoles;
+	DirtDiggable dirtScript;
 
 	private Rigidbody2D rb;
 	private SpriteRenderer rend;
@@ -26,6 +28,8 @@ public class RabbitBabyController : MonoBehaviour {
 	public bool holeEntering = false;
 	public bool digAllowed = false;
 	public bool digging = false;
+
+	public List<Transform> dirtTransList;
 
 	//public bool pickupAvailable = false;
 	//public GameObject pickUpObject;
@@ -42,6 +46,7 @@ public class RabbitBabyController : MonoBehaviour {
 	private void Start()
 	{
 		rabbitHoles = GameObject.Find ("RabbitHoles").gameObject.transform.GetComponent<RabbitHoles> ();
+		dirtScript = GameObject.Find ("Dirt").gameObject.transform.GetComponent<DirtDiggable> ();
 
 		rb = GetComponent<Rigidbody2D>();
 		rend = GetComponent<SpriteRenderer>();
@@ -58,28 +63,9 @@ public class RabbitBabyController : MonoBehaviour {
 
 	private void Update() {
 
-		if (Input.GetKeyUp (KeyCode.LeftControl)) {
-			digging = false;
-		}
-
-		if (CharacterActive) {
-
-			if (digAllowed) {
-
-				if (Input.GetKey (KeyCode.LeftShift) && (Input.GetKey (KeyCode.S))) {
-
-					digging = true;
-
-
-				} else {
-
-					digging = false;
-				}
-			}
-
-		} 
 
 	}
+
 
 
 	private void FixedUpdate()
@@ -91,26 +77,39 @@ public class RabbitBabyController : MonoBehaviour {
 
 		if (CharacterActive) {
 
-
-			// HoleEnter /////////////////////////
-			if (digAllowed) {
-				
-				// dig down //
-				if (Input.GetKey (KeyCode.LeftControl) && (Input.GetKey (KeyCode.S))) {
-
-					digging = true;
-
-					Debug.Log ("HERE1");
-
-
-				} else {
-
-					digging = false;
+			// Jumping ////////////////////////
+			if (Input.GetKeyDown (KeyCode.Space)) {
+				if (jump == true) {
+					//	anim.SetBool ("Jumping", true);
+					rb.velocity = new Vector2 (rb.velocity.x, jumpHeight);
+					jump = false;
 				}
-
+			}
+			if (jump == false) {
+				jumptimer = jumptimer + 1;
+				if (jumptimer >= 50) {
+					jumptimer = 0;
+					//	anim.SetBool ("Jumping", false);
+					jump = true;
+				}
 			}
 
-
+			// Digging Hole /////////////////////////
+			if (digAllowed) {
+				if (Input.GetKey (KeyCode.LeftShift)) {
+					digging = true;
+					if (Input.GetKey (KeyCode.S) || Input.GetKey (KeyCode.A) || Input.GetKey (KeyCode.D) || Input.GetKey (KeyCode.W)) {
+						for (int i = 0; i < dirtTransList.Count; i++) {
+							if (dirtTransList [i]) {
+								dirtTransList [i].GetComponent<DirtDiggable> ().DestroyDirt ();
+							}
+						}
+					}
+				} else {
+					digging = false;
+				}
+			}
+			//////////////////////////////////
 
 			// HoleEnter /////////////////////////
 			if (holeEnterAllowed) {
@@ -132,23 +131,6 @@ public class RabbitBabyController : MonoBehaviour {
 			//////////////////////////////////
 
 
-			// Jumping ////////////////////////
-			if (Input.GetKeyDown (KeyCode.Space)) {
-				if (jump == true) {
-					//	anim.SetBool ("Jumping", true);
-					rb.velocity = new Vector2 (rb.velocity.x, jumpHeight);
-					jump = false;
-				}
-			}
-			if (jump == false) {
-				jumptimer = jumptimer + 1;
-				if (jumptimer >= 50) {
-					jumptimer = 0;
-					//	anim.SetBool ("Jumping", false);
-					jump = true;
-				}
-			}
-
 
 			// Running ////////////////////
 			if (Input.GetKey (KeyCode.LeftShift)) {
@@ -166,13 +148,13 @@ public class RabbitBabyController : MonoBehaviour {
 			// Walking ///////////////////
 			if (Input.GetKey (KeyCode.D) || Input.GetKey (KeyCode.A)) {
 
-				anim.SetBool ("CubWalk", true);
+			//	anim.SetBool ("CubWalk", true);
 
 				//Sets x and y basic movement
 				transform.Translate (new Vector3 (Time.deltaTime * speed * moveHorizontal, 0, 0));
 			} else {
 			//	firstMove = true;
-				anim.SetBool ("CubWalk", false);
+				//anim.SetBool ("CubWalk", false);
 			}
 			///////////////////////////////	
 
@@ -189,13 +171,13 @@ public class RabbitBabyController : MonoBehaviour {
 			// Walking ///////////////////
 			if (Input.GetKey (KeyCode.D) || Input.GetKey (KeyCode.A)) {
 
-				anim.SetBool ("CubWalk", true);
+			//	anim.SetBool ("CubWalk", true);
 
 				//Sets x and y basic movement
 				transform.Translate (new Vector3 (Time.deltaTime * speed * moveHorizontal, 0, 0));
 				
 				} else {
-					anim.SetBool ("CubWalk", false);
+				//	anim.SetBool ("CubWalk", false);
 				}
 
 			// Turning around ////////////
@@ -231,7 +213,22 @@ public class RabbitBabyController : MonoBehaviour {
 			}
 		}
 	}
+
+
+
+	public void AddDirtToList(Transform dirtPiece) {
+
+		dirtTransList.Add (dirtPiece);
+
+	}
+
+	public void RemoveDirtToList(Transform dirtPiece) {
+
+		dirtTransList.Remove (dirtPiece);
+
+	}
 		
+
 
 	IEnumerator Wait(float secs) {
 		yield return new WaitForSeconds (secs);

@@ -53,24 +53,6 @@ public class BisonCalfController : MonoBehaviour {
 		if (Input.GetKeyUp (KeyCode.LeftControl)) {
 			pushing = false;
 		}
-
-		if (CharacterActive) {
-	
-			if (pushAllowed) {
-				
-				if (Input.GetKey (KeyCode.LeftControl) && (Input.GetKey (KeyCode.D) || Input.GetKey (KeyCode.A))) {
-
-					pushing = true;
-
-					RotateTree ();
-
-				} else {
-					
-					pushing = false;
-				}
-			}
-		
-		} 
 	}
 
 
@@ -83,25 +65,36 @@ public class BisonCalfController : MonoBehaviour {
 		float moveVertical = Input.GetAxis ("Vertical");
 
 		if (CharacterActive) {
-			// Jumping ////////////////////////
-			//if (!cubClimbing) {
-				if (Input.GetKeyDown (KeyCode.Space)) {
-					if (jump == true) {
-						//	anim.SetBool ("Jumping", true);
-						rb.velocity = new Vector2 (rb.velocity.x, jumpHeight);
-						jump = false;
-					}
-				}
-				if (jump == false) {
-					jumptimer = jumptimer + 1;
-					if (jumptimer >= 50) {
-						jumptimer = 0;
-						//	anim.SetBool ("Jumping", false);
-						jump = true;
-					}
-				}
-		//	}
 
+
+			// Jumping ////////////////////////
+			if (Input.GetKeyDown (KeyCode.Space)) {
+				if (jump == true) {
+					//	anim.SetBool ("Jumping", true);
+					rb.velocity = new Vector2 (rb.velocity.x, jumpHeight);
+					jump = false;
+				}
+			}
+			if (jump == false) {
+				jumptimer = jumptimer + 1;
+				if (jumptimer >= 50) {
+					jumptimer = 0;
+					//	anim.SetBool ("Jumping", false);
+					jump = true;
+				}
+			} 
+
+			// Pushing ////////////////////////
+			if (pushAllowed) {
+				if (Input.GetKey (KeyCode.LeftControl) && (Input.GetKey (KeyCode.D) || Input.GetKey (KeyCode.A))) {
+					pushing = true;
+					RotateTree ();
+				} else {
+
+					pushing = false;
+				}
+			}
+			///////////////////////////////	
 
 			// Running ////////////////////
 			if (Input.GetKey (KeyCode.LeftShift)) {
