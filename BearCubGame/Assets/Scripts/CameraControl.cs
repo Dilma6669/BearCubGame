@@ -84,6 +84,11 @@ public class CameraControl : MonoBehaviour
 				averagePos += m_Targets [2].position;
 			}
 		}
+		if (playerController.beaverSelected) {
+			if (m_Targets [3].gameObject.activeSelf) {
+				averagePos += m_Targets [3].position;
+			}
+		}
 		m_DesiredPosition = averagePos;
 	}
 		
@@ -142,6 +147,15 @@ public class CameraControl : MonoBehaviour
 		if (playerController.bisonCalfSelected) {
 			if (m_Targets [2].gameObject.activeSelf) {
 				Vector3 targetLocalPos = transform.InverseTransformPoint (m_Targets [2].position);
+				Vector3 desiredPosToTarget = targetLocalPos - desiredLocalPos;
+				size = Mathf.Max (size, Mathf.Abs (desiredPosToTarget.y));
+				size = Mathf.Max (size, Mathf.Abs (desiredPosToTarget.x) / m_Camera.aspect);
+			}
+		}
+
+		if (playerController.beaverSelected) {
+			if (m_Targets [3].gameObject.activeSelf) {
+				Vector3 targetLocalPos = transform.InverseTransformPoint (m_Targets [3].position);
 				Vector3 desiredPosToTarget = targetLocalPos - desiredLocalPos;
 				size = Mathf.Max (size, Mathf.Abs (desiredPosToTarget.y));
 				size = Mathf.Max (size, Mathf.Abs (desiredPosToTarget.x) / m_Camera.aspect);

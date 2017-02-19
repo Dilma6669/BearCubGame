@@ -3,12 +3,15 @@ using System.Collections;
 
 public class DirtDiggable : MonoBehaviour {
 
+	DirtController dirtControllerScript;
 
 	public bool dirtContact = false;
 
 	// Use this for initialization
 	void Start () {
 	
+		dirtControllerScript = GameObject.Find ("DirtController").gameObject.transform.GetComponent<DirtController> ();
+
 	}
 	
 	// Update is called once per frame
@@ -28,7 +31,7 @@ public class DirtDiggable : MonoBehaviour {
 
 			dirtContact = true;
 
-			col.GetComponent<RabbitBabyController> ().AddDirtToList (this.transform);
+			dirtControllerScript.AddDirtToList (this.transform);
 
 		}
 	}
@@ -39,7 +42,7 @@ public class DirtDiggable : MonoBehaviour {
 
 			dirtContact = false;
 
-			col.GetComponent<RabbitBabyController> ().RemoveDirtToList (this.transform);
+			dirtControllerScript.RemoveDirtToList (this.transform);
 
 		}
 

@@ -9,7 +9,6 @@ public class BisonCalfController : MonoBehaviour {
 
 	public float speed = 5f;
 	private float walkSpeed = 5f;
-	public float climbSpeed = 10f;
 	private float sprintSpeed;
 
 	private Rigidbody2D rb;
@@ -27,8 +26,6 @@ public class BisonCalfController : MonoBehaviour {
 
 	private Transform treeObject;
 	private Vector3 tempVect3;
-	public bool canDropObject = false;
-
 
 	private Animator anim;
 
@@ -128,7 +125,7 @@ public class BisonCalfController : MonoBehaviour {
 			turn (moveHorizontal);
 			///////////////////////////////	
 		} else {
-
+			/*
 			if (firstMove) {
 				StartCoroutine (Wait (1.0f));
 			} else {
@@ -150,7 +147,7 @@ public class BisonCalfController : MonoBehaviour {
 				// Turning around ////////////
 				turn (moveHorizontal);
 				///////////////////////////////	
-			} 
+			} */
 		}
 	}
 
@@ -167,7 +164,7 @@ public class BisonCalfController : MonoBehaviour {
 				facingRight = !facingRight;
 			} 
 		} else {
-
+			/*
 			if (firstMove) {
 				StartCoroutine (Wait (1.0f));
 			} else {
@@ -177,7 +174,7 @@ public class BisonCalfController : MonoBehaviour {
 					rend.flipX = !rend.flipX;
 					facingRight = !facingRight;
 				} 
-			}
+			} */
 		}
 	}
 

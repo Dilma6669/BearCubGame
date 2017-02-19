@@ -26,9 +26,7 @@ public class StoneController : MonoBehaviour {
 
 		if (col.tag == "BearCubPlayer") {
 			col.GetComponent<BearCubController> ().pickupAvailable = false;
-			this.transform.GetComponent<PolygonCollider2D> ().enabled = true;
-			this.transform.GetComponent<Rigidbody2D> ().gravityScale = 1;
-			//	pickUpObject.transform.SetParent(this.transform);
+
 		}
 	}
 }

@@ -7,34 +7,28 @@ public class RabbitBabyController : MonoBehaviour {
 	public bool CharacterActive = false;
 	private bool firstMove = true;
 
-	public float speed = 5f;
-	private float walkSpeed = 5f;
-	//public float climbSpeed = 10f;
-	private float sprintSpeed;
+	private float currentSpeed;
+	public float walkSpeed = 1f;
+	public float digSpeed = 1f;
+	private float sprintSpeed = 1f;
+	public float jumpHeight = 7f;
 
 	RabbitHoles rabbitHoles;
-	DirtDiggable dirtScript;
+	DirtController dirtControllerScript;
 
 	private Rigidbody2D rb;
 	private SpriteRenderer rend;
 
-	private bool run;
-
-	public float jumpHeight = 7f;
-	private bool jump = true;
+	public bool jumpAllowed = true;
 	private float jumptimer;
 
 	public bool holeEnterAllowed = false;
 	public bool holeEntering = false;
 	public bool digAllowed = false;
 	public bool digging = false;
+	public bool rabbitRunnning = false;
 
 	public List<Transform> dirtTransList;
-
-	//public bool pickupAvailable = false;
-	//public GameObject pickUpObject;
-	//public bool canDropObject = false;
-
 
 	private Animator anim;
 
@@ -46,15 +40,13 @@ public class RabbitBabyController : MonoBehaviour {
 	private void Start()
 	{
 		rabbitHoles = GameObject.Find ("RabbitHoles").gameObject.transform.GetComponent<RabbitHoles> ();
-		dirtScript = GameObject.Find ("Dirt").gameObject.transform.GetComponent<DirtDiggable> ();
+		dirtControllerScript = GameObject.Find ("DirtController").gameObject.transform.GetComponent<DirtController> ();
 
 		rb = GetComponent<Rigidbody2D>();
 		rend = GetComponent<SpriteRenderer>();
-		run = false;
 		anim = GetComponent<Animator> ();
 		facingRight = false;
-		walkSpeed = speed;
-		sprintSpeed = speed * 1.8f;
+		currentSpeed = walkSpeed;
 	}
 
 	public void SetActive() {
@@ -71,119 +63,88 @@ public class RabbitBabyController : MonoBehaviour {
 	private void FixedUpdate()
 	{
 
-		// Basic Movement Player //
-		float moveHorizontal = Input.GetAxis ("Horizontal");
-		float moveVertical = Input.GetAxis ("Vertical");
-
 		if (CharacterActive) {
 
-			// Jumping ////////////////////////
-			if (Input.GetKeyDown (KeyCode.Space)) {
-				if (jump == true) {
-					//	anim.SetBool ("Jumping", true);
-					rb.velocity = new Vector2 (rb.velocity.x, jumpHeight);
-					jump = false;
-				}
-			}
-			if (jump == false) {
-				jumptimer = jumptimer + 1;
-				if (jumptimer >= 50) {
-					jumptimer = 0;
-					//	anim.SetBool ("Jumping", false);
-					jump = true;
-				}
-			}
+			// Basic Movement Player //
+			float moveHorizontal = Input.GetAxis ("Horizontal");
+			float moveVertical = Input.GetAxis ("Vertical");
 
-			// Digging Hole /////////////////////////
-			if (digAllowed) {
-				if (Input.GetKey (KeyCode.LeftShift)) {
-					digging = true;
-					if (Input.GetKey (KeyCode.S) || Input.GetKey (KeyCode.A) || Input.GetKey (KeyCode.D) || Input.GetKey (KeyCode.W)) {
-						for (int i = 0; i < dirtTransList.Count; i++) {
-							if (dirtTransList [i]) {
-								dirtTransList [i].GetComponent<DirtDiggable> ().DestroyDirt ();
-							}
-						}
+			// Jumping ////////////////////////
+			if (!digging) {
+				if (jumpAllowed == true) {
+					if (Input.GetKeyDown (KeyCode.Space)) {
+						//	anim.SetBool ("Jumping", true);
+						rb.velocity = new Vector2 (rb.velocity.x, jumpHeight);
+						jumpAllowed = false;
 					}
-				} else {
-					digging = false;
-				}
+				} 
 			}
 			//////////////////////////////////
+
+
+
+			// Digging Hole /////////////////////////
+			if (Input.GetKey (KeyCode.S)) {
+				anim.SetBool ("RabbitDig", true);
+				rabbitRunnning = false;
+				digging = true;
+				if (digAllowed) {
+					dirtControllerScript.DeleteDirtList ();
+				}
+			} else if (Input.GetKeyUp (KeyCode.S)) {
+				digging = false;
+				anim.SetBool ("RabbitDig", false);
+			}
+			//////////////////////////////////
+
+
 
 			// HoleEnter /////////////////////////
 			if (holeEnterAllowed) {
 				if (Input.GetKey (KeyCode.W)) {
 					holeEntering = true;
 					this.transform.position = rabbitHoles.EnterRabbitHole (this.transform);
-					//anim.SetBool ("CubWalk", false);
-					//anim.SetBool ("CubClimb", true);
+					transform.Translate (new Vector3 (0, Time.deltaTime * currentSpeed * moveVertical, 0));
 				}
-			}
-			if (!(holeEnterAllowed)) {
-				//anim.SetBool ("CubWalk", false);
+			} else if (!holeEnterAllowed) {
+				anim.SetBool ("RabbitWalk", false);
 				holeEntering = false;
-				//anim.SetBool ("CubClimb", false);
 			}
-			if (holeEnterAllowed) {
-				transform.Translate (new Vector3 (0, Time.deltaTime * (speed / 2) * moveVertical, 0));
-			} 
 			//////////////////////////////////
 
 
 
 			// Running ////////////////////
 			if (Input.GetKey (KeyCode.LeftShift)) {
-				if (speed <= walkSpeed * 2) {
-					speed = sprintSpeed;
+				rabbitRunnning = true;
+				//anim.SetBool ("RabbitRun", true);
+				if (currentSpeed <= walkSpeed * 2) {
+					currentSpeed = walkSpeed * 2;
 				}
-			} else {
-				speed = walkSpeed;
+			} else if (Input.GetKeyUp (KeyCode.LeftShift)) {
+				rabbitRunnning = false;
+				currentSpeed = walkSpeed;
 			}
 			///////////////////////////////	
-		}
 
 
-		if (CharacterActive) {
 			// Walking ///////////////////
 			if (Input.GetKey (KeyCode.D) || Input.GetKey (KeyCode.A)) {
-
-			//	anim.SetBool ("CubWalk", true);
-
-				//Sets x and y basic movement
-				transform.Translate (new Vector3 (Time.deltaTime * speed * moveHorizontal, 0, 0));
-			} else {
-			//	firstMove = true;
-				//anim.SetBool ("CubWalk", false);
+				transform.Translate (new Vector3 (Time.deltaTime * currentSpeed * moveHorizontal, 0, 0));
+				if (digging) {
+					currentSpeed = digSpeed;
+				} else if (!digging) {
+					currentSpeed = walkSpeed;
+					anim.SetBool ("RabbitWalk", true);
+				}
+			} else if (Input.GetKeyUp (KeyCode.D) || Input.GetKeyUp (KeyCode.A)) {
+				anim.SetBool ("RabbitWalk", false);
 			}
-			///////////////////////////////	
 
 
 			// Turning around ////////////
 			turn (moveHorizontal);
-			///////////////////////////////	
-		} else {
-
-			if (firstMove) {
-				StartCoroutine (Wait (1.0f));
-			} else {
-
-			// Walking ///////////////////
-			if (Input.GetKey (KeyCode.D) || Input.GetKey (KeyCode.A)) {
-
-			//	anim.SetBool ("CubWalk", true);
-
-				//Sets x and y basic movement
-				transform.Translate (new Vector3 (Time.deltaTime * speed * moveHorizontal, 0, 0));
-				
-				} else {
-				//	anim.SetBool ("CubWalk", false);
-				}
-
-			// Turning around ////////////
-				turn (moveHorizontal);
-				///////////////////////////////	
-			} 
+			///////////////////////////////
 		}
 	}
 
@@ -193,39 +154,12 @@ public class RabbitBabyController : MonoBehaviour {
 	{
 		if (CharacterActive) {
 
-
 			if (moveHorizontal < 0 && !facingRight || moveHorizontal > 0 && facingRight) {
 
 				rend.flipX = !rend.flipX;
 				facingRight = !facingRight;
 			} 
-		} else {
-			
-			if (firstMove) {
-				StartCoroutine (Wait (1.0f));
-			} else {
-
-				if (moveHorizontal < 0 && !facingRight || moveHorizontal > 0 && facingRight) {
-
-					rend.flipX = !rend.flipX;
-					facingRight = !facingRight;
-				} 
-			}
 		}
-	}
-
-
-
-	public void AddDirtToList(Transform dirtPiece) {
-
-		dirtTransList.Add (dirtPiece);
-
-	}
-
-	public void RemoveDirtToList(Transform dirtPiece) {
-
-		dirtTransList.Remove (dirtPiece);
-
 	}
 		
 

@@ -7,22 +7,20 @@ public class BearCubController : MonoBehaviour {
 	private bool firstMove = true;
 
 
-	public float speed = 5f;
-	private float walkSpeed = 5f;
-	public float climbSpeed = 10f;
-	private float sprintSpeed;
+	private float currentSpeed;
+	public float walkSpeed = 1f;
+	public float climbSpeed = 1f;
+	public float jumpHeight = 1f;
 
 	private Rigidbody2D rb;
 	private SpriteRenderer rend;
 
-	private bool run;
-
-	public float jumpHeight = 7f;
-	private bool jump = true;
+	public bool jumpAllowed = true;
 	private float jumptimer;
 
 	public bool climbAllowed = false;
 	public bool cubClimbing = false;
+	public bool cubRunnning = false;
 
 	public bool pickupAvailable = false;
 	public GameObject pickUpObject;
@@ -40,11 +38,9 @@ public class BearCubController : MonoBehaviour {
 	{
 		rb = GetComponent<Rigidbody2D>();
 		rend = GetComponent<SpriteRenderer>();
-		run = false;
 		anim = GetComponent<Animator> ();
 		facingRight = false;
-		walkSpeed = speed;
-		sprintSpeed = speed * 1.8f;
+		currentSpeed = walkSpeed;
 	}
 		
 	private void Update()
@@ -56,7 +52,7 @@ public class BearCubController : MonoBehaviour {
 				if (Input.GetKeyDown (KeyCode.LeftControl)) {
 
 					pickUpObject.transform.GetComponent<PolygonCollider2D> ().enabled = true;
-					pickUpObject.transform.SetParent (this.transform);
+					//pickUpObject.transform.SetParent (this.transform);
 					pickUpObject.transform.GetComponent<Rigidbody2D> ().isKinematic = false;
 					pickUpObject.transform.SetParent (GameObject.Find ("StoneContainer").gameObject.transform);
 
@@ -74,23 +70,21 @@ public class BearCubController : MonoBehaviour {
 					canDropObject = false;
 				}
 
-			} else {
+			} else if (pickupAvailable) {
 
-				if (pickupAvailable) {
+				if (Input.GetKeyDown (KeyCode.LeftControl)) {
 
-					if (Input.GetKeyDown (KeyCode.LeftControl)) {
+					pickUpObject.transform.GetComponent<PolygonCollider2D> ().enabled = false;
+					pickUpObject.transform.SetParent (this.transform);
+					pickUpObject.transform.GetComponent<Rigidbody2D> ().isKinematic = true;
+					pickUpObject.transform.GetComponent<Rigidbody2D> ().velocity = new Vector2 (0.0f, 0.0f);
 
-						pickUpObject.transform.GetComponent<PolygonCollider2D> ().enabled = false;
-						pickUpObject.transform.SetParent (this.transform);
-						pickUpObject.transform.GetComponent<Rigidbody2D> ().isKinematic = true;
-
-						pickUpObject.transform.position = this.transform.position;
-						pickupAvailable = false;
-						canDropObject = true;
-					}
-
+					pickUpObject.transform.position = this.transform.position;
+					pickUpObject.transform.rotation = this.transform.rotation;
+					pickupAvailable = false;
+					canDropObject = true;
 				}
-	
+
 			}
 		}
 	}
@@ -99,108 +93,96 @@ public class BearCubController : MonoBehaviour {
 	private void FixedUpdate()
 	{
 
+		if (CharacterActive) {
+
 		// Basic Movement Player //
 		float moveHorizontal = Input.GetAxis ("Horizontal");
 		float moveVertical = Input.GetAxis ("Vertical");
 
-		if (CharacterActive) {
 			// Climbing /////////////////////////
-			if (climbAllowed) {
+			if (cubClimbing) {
+				if (Input.GetKey (KeyCode.W) || Input.GetKey (KeyCode.S)) {
+					transform.Translate (new Vector3 (0, Time.deltaTime * currentSpeed * moveVertical, 0));
+				}
+
+				if (Input.GetKey (KeyCode.D) || Input.GetKey (KeyCode.A)) {
+					transform.Translate (new Vector3 (Time.deltaTime * currentSpeed * moveHorizontal, 0, 0));
+				}
+
+			} else if (climbAllowed) {
 				if (Input.GetKey (KeyCode.W)) {
 					cubClimbing = true;
-					anim.SetBool ("CubWalk", false);
 					anim.SetBool ("CubClimb", true);
-					this.gameObject.GetComponent<Rigidbody2D> ().isKinematic = true;
+					anim.SetBool ("CubWalk", false);
+					//	anim.SetBool ("Jumping", false);
+					GetComponent<Rigidbody2D> ().velocity = new Vector2 (0.0f, 0.0f);
+					GetComponent<Rigidbody2D> ().gravityScale = 0;
+					currentSpeed = climbSpeed;
 				}
-			}
-			if (!(climbAllowed)) {
-				anim.SetBool ("CubWalk", false);
-				cubClimbing = false;
-				anim.SetBool ("CubClimb", false);
-				this.gameObject.GetComponent<Rigidbody2D> ().isKinematic = false;
-			}
-			if (climbAllowed) {
-				transform.Translate (new Vector3 (0, Time.deltaTime * (speed / 2) * moveVertical, 0));
-			}
+			} else if (!climbAllowed) {
+					cubClimbing = false;
+					anim.SetBool ("CubClimb", false);
+					this.gameObject.GetComponent<Rigidbody2D> ().gravityScale = 1.5f;
+				}
 			//////////////////////////////////
 
 
 			// Jumping ////////////////////////
 			if (!cubClimbing) {
-				if (Input.GetKeyDown (KeyCode.Space)) {
-					if (jump == true) {
-						//	anim.SetBool ("Jumping", true);
-						rb.velocity = new Vector2 (rb.velocity.x, jumpHeight);
-						jump = false;
-					}
+				if (Input.GetKeyDown (KeyCode.Space) && jumpAllowed) {
+					jumpAllowed = false;
+					anim.SetBool ("CubWalk", false);
+					//	anim.SetBool ("Jumping", true);
+					rb.velocity = new Vector2 (rb.velocity.x, jumpHeight);
 				}
-				if (jump == false) {
-					jumptimer = jumptimer + 1;
-					if (jumptimer >= 50) {
-						jumptimer = 0;
-						//	anim.SetBool ("Jumping", false);
-						jump = true;
-					}
-				}
-			}
+			} 
+			//////////////////////////////////
 
 
 			// Running ////////////////////
 			if (Input.GetKey (KeyCode.LeftShift)) {
-				if (speed <= walkSpeed * 2) {
-					speed = sprintSpeed;
+				cubRunnning = true;
+				anim.SetBool ("CubWalk", false);
+				//anim.SetBool ("CubRun", true);
+				if (cubClimbing) {
+					if (currentSpeed <= climbSpeed * 2) {
+						currentSpeed = climbSpeed * 2;
+					}
+				} else {
+					currentSpeed = walkSpeed * 2;
 				}
-			} else {
-				speed = walkSpeed;
+			} else if (Input.GetKeyUp (KeyCode.LeftShift)) {
+				cubRunnning = false;
+				if (cubClimbing) {
+					currentSpeed = climbSpeed;
+				} else {
+					currentSpeed = walkSpeed;
+				}
 			}
 			///////////////////////////////	
-		}
 
 
-		if (CharacterActive) {
 			// Walking ///////////////////
-			if (Input.GetKey (KeyCode.D) || Input.GetKey (KeyCode.A)) {
+			if (!cubClimbing) {
+				if (Input.GetKeyUp (KeyCode.D) || Input.GetKeyUp (KeyCode.A)) {
+					anim.SetBool ("CubWalk", false);
+				} else if (Input.GetKey (KeyCode.D) || Input.GetKey (KeyCode.A)) {
 
-				anim.SetBool ("CubWalk", true);
+					transform.Translate (new Vector3 (Time.deltaTime * currentSpeed * moveHorizontal, 0, 0));
 
-				if (!cubClimbing) {
-					//Sets x and y basic movement
-					transform.Translate (new Vector3 (Time.deltaTime * speed * moveHorizontal, 0, 0));
+					if (!cubRunnning && jumpAllowed) {
+						currentSpeed = walkSpeed;
+						anim.SetBool ("CubWalk", true);
+					}
+
 				}
-			} else {
-				firstMove = true;
-				anim.SetBool ("CubWalk", false);
 			}
 			///////////////////////////////	
 
 
 			// Turning around ////////////
 			turn (moveHorizontal);
-			///////////////////////////////	
-		} else {
-
-			if (firstMove) {
-				StartCoroutine (Wait (1.0f));
-			} else {
-
-				// Walking ///////////////////
-				if (Input.GetKey (KeyCode.D) || Input.GetKey (KeyCode.A)) {
-
-					anim.SetBool ("CubWalk", true);
-
-					if (!cubClimbing) {
-						//Sets x and y basic movement
-						transform.Translate (new Vector3 (Time.deltaTime * speed * moveHorizontal, 0, 0));
-					}
-
-				} else {
-					anim.SetBool ("CubWalk", false);
-				}
-
-				// Turning around ////////////
-				turn (moveHorizontal);
-				///////////////////////////////	
-			} 
+			///////////////////////////////
 		}
 	}
 
@@ -216,18 +198,6 @@ public class BearCubController : MonoBehaviour {
 				rend.flipX = !rend.flipX;
 				facingRight = !facingRight;
 			} 
-		} else {
-
-			if (firstMove) {
-				StartCoroutine (Wait (1.0f));
-			} else {
-
-				if (moveHorizontal < 0 && !facingRight || moveHorizontal > 0 && facingRight) {
-
-					rend.flipX = !rend.flipX;
-					facingRight = !facingRight;
-				} 
-			}
 		}
 	}
 

@@ -17,8 +17,8 @@ public class TreeClimb : MonoBehaviour {
 	void OnTriggerEnter2D(Collider2D col) {
 
 		if (col.tag == "BearCubPlayer") {
-			//col.GetComponent<Player1Controller> ().SetAnimation(this.transform);
 			col.GetComponent<BearCubController> ().climbAllowed = true;
+			col.GetComponent<BearCubController> ().jumpAllowed = true;
 		}
 	}
 
