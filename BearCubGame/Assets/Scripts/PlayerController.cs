@@ -97,6 +97,7 @@ public class PlayerController : MonoBehaviour {
 
 	private void SetColliders() {
 
+		/*
 		for (int i = 0; i < MoveableTrees.transform.childCount; i++) {
 
 			Physics2D.IgnoreCollision (bearCubPlayer.GetComponent<BoxCollider2D> (), MoveableTrees.transform.GetChild (i).GetComponent<BoxCollider2D> ());
@@ -112,5 +113,6 @@ public class PlayerController : MonoBehaviour {
 			Physics2D.IgnoreCollision (bisonCalfPlayer.GetComponent<BoxCollider2D> (), MoveableTrees.transform.GetChild (i).GetComponent<BoxCollider2D> ());
 		}
 
+*/
 	}
 }

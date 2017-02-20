@@ -3,17 +3,17 @@ using System.Collections;
 
 public class TreeABC : MonoBehaviour {
 
+	public bool burning = false;
+	private float burnSpreadTimer;
+	private bool burnWait = false;
+
+
 	public bool treeContact = false;
-
-	private bool entered = false;
-
 	public bool climbAllowed = true;
 
-	public bool onFire = false;
+	public int treeHealth = 20;
 
-	private int treeHealth = 20;
-
-	private SpriteRenderer renderer;
+	SpriteRenderer renderer;
 
 	// Use this for initialization
 	void Start () {
@@ -27,8 +27,13 @@ public class TreeABC : MonoBehaviour {
 
 
 		if (treeHealth <= 0) {
-			DestroyTree ();
+			DestroyTree();
 		}
+
+		if (burning && (!burnWait)) {
+			StartCoroutine (Wait(burnSpreadTimer));
+		}
+
 
 	}
 
@@ -39,11 +44,16 @@ public class TreeABC : MonoBehaviour {
 		 Destroy (this.gameObject);
 
 	}
+		
 
-	public void TreeOnFire() {
+	public void SetTreeOnFire(float burnCool) {
 
-		renderer.color = new Color (255, 0, 0, 1);
+		if (!burning) {
 
+			burnSpreadTimer = burnCool;
+
+			StartCoroutine (FirstWait (burnSpreadTimer));
+		}
 	}
 
 	void OnTriggerStay2D(Collider2D col) {
@@ -53,14 +63,7 @@ public class TreeABC : MonoBehaviour {
 			col.GetComponent<BearCubController> ().climbAllowed = true;
 			col.GetComponent<BearCubController> ().jumpAllowed = true;
 		}
-			
-		if (col.tag == "TreeABC") {
-			Debug.Log ("here");
-			if (col.GetComponent<TreeABC> ().onFire) {
-				TreeOnFire ();
-				onFire = true;
-			}
-		}
+
 	}
 
 	void OnTriggerExit2D(Collider2D col) {
@@ -69,5 +72,24 @@ public class TreeABC : MonoBehaviour {
 			col.GetComponent<BearCubController> ().climbAllowed = false;
 			col.GetComponent<BearCubController> ().cubClimbing = false;
 		}
-	} 
+	}
+
+	IEnumerator Wait(float secs) {
+		burnWait = true;
+		yield return new WaitForSeconds (secs);
+		treeHealth--;
+		burnWait = false;
+	}
+
+	IEnumerator FirstWait(float secs) {
+		yield return new WaitForSeconds (secs);
+		if (!burning) {
+			burning = true;
+
+			// have to load fire game object from resources folder //
+			GameObject fire = (GameObject)Instantiate (Resources.Load ("FireTemp"));
+			fire.transform.SetParent (this.transform, false);
+			fire.transform.localScale = new Vector3 (1.5f, 1.5f, -3f);
+		}
+	}
 }

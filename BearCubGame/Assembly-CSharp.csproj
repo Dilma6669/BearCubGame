@@ -54,6 +54,7 @@
      <Compile Include="Assets\Scripts\DirtController.cs" />
      <Compile Include="Assets\Scripts\DirtDiggable.cs" />
      <Compile Include="Assets\Scripts\DirtRevealChildren.cs" />
+     <Compile Include="Assets\Scripts\FireController.cs" />
      <Compile Include="Assets\Scripts\HoleEnter.cs" />
      <Compile Include="Assets\Scripts\LedgeController.cs" />
      <Compile Include="Assets\Scripts\PlayerController.cs" />
