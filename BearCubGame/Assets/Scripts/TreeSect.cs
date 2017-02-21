@@ -3,11 +3,17 @@ using System.Collections;
 
 public class TreeSect : MonoBehaviour {
 
-	public int sectionCount = 0;
+	public int uniqueNumTag;
+
+	public int abcCount = 0;
+
+	private TreeTrunk parentTrunkScript;
 
 	// Use this for initialization
 	void Start () {
 	
+		parentTrunkScript = this.gameObject.transform.parent.GetComponentInParent<TreeTrunk> ();
+
 	}
 	
 	// Update is called once per frame
@@ -17,20 +23,20 @@ public class TreeSect : MonoBehaviour {
 
 	public void IncreaseSectionCount() {
 
-		sectionCount++;
+		abcCount++;
 
 		// All sections gone //
-		if (sectionCount >= 3) {
+		if (abcCount >= 3) {
 
 			Destroy (this.transform.GetChild (0).gameObject);
+		
 
-			Destroy (this.gameObject);
-
-			this.gameObject.transform.parent.GetComponentInParent<TreeTrunk> ().CreateNewTrunk (this.gameObject);
-
+			//	parentTrunkScript.CreateNewTrunk (uniqueNumTag, this.gameObject);
+				parentTrunkScript.sectCollection (uniqueNumTag, this.gameObject);
 
 
-			//GetComponentInParent<TreeSect> ().IncreaseSectionCount ();
+
+			//Destroy (this.gameObject);
 
 		}
 	}

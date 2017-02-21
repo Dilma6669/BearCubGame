@@ -24,7 +24,8 @@ public class FireController : MonoBehaviour {
 		if (col.tag == "TreeABC") {
 			treeABC = col.GetComponent<TreeABC> ();
 			if (!treeABC.burning) {
-				Debug.Log ("fireCatching");
+				//Debug.Log ("fireCatching");
+				//treeABC.SetTreeOnFire (Random.Range(2.0f, 3.0f));
 				treeABC.SetTreeOnFire (burnSpreadTimer);
 			}
 		}

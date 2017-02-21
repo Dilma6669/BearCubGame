@@ -3,6 +3,7 @@ using System.Collections;
 
 public class TreeABC : MonoBehaviour {
 
+	public bool setOnFire = false;
 	public bool burning = false;
 	private float burnSpreadTimer;
 	private bool burnWait = false;
@@ -11,7 +12,7 @@ public class TreeABC : MonoBehaviour {
 	public bool treeContact = false;
 	public bool climbAllowed = true;
 
-	public int treeHealth = 20;
+	public int treeHealth = 2;
 
 	SpriteRenderer renderer;
 
@@ -34,6 +35,12 @@ public class TreeABC : MonoBehaviour {
 			StartCoroutine (Wait(burnSpreadTimer));
 		}
 
+		/*if (!burning && setOnFire) {
+
+			SetTreeOnFire (2.0f);
+
+		}
+*/
 
 	}
 
@@ -82,14 +89,16 @@ public class TreeABC : MonoBehaviour {
 	}
 
 	IEnumerator FirstWait(float secs) {
-		yield return new WaitForSeconds (secs);
 		if (!burning) {
 			burning = true;
+
+			yield return new WaitForSeconds (secs);
 
 			// have to load fire game object from resources folder //
 			GameObject fire = (GameObject)Instantiate (Resources.Load ("FireTemp"));
 			fire.transform.SetParent (this.transform, false);
-			fire.transform.localScale = new Vector3 (1.5f, 1.5f, -3f);
+			fire.transform.localScale = new Vector3 (1.5f, 1.5f, 1f);
+			fire.transform.localPosition = new Vector3 (0, 0, -1f);
 		}
 	}
 }
